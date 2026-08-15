@@ -1,0 +1,21 @@
+import {Page} from "@playwright/test";
+
+class basePage{
+    protected page: Page;
+    constructor(page:Page) {
+        this.page = page;
+    }
+
+    async navigate(path:string){
+        await this.page.goto(path);
+    }
+
+    async waitForLoad(){
+        await this.page.waitForLoadState('networkidle');
+    }
+
+    async getTitle(){
+        return await this.page.title();
+    }
+
+}
