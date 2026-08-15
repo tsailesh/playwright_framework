@@ -1,0 +1,22 @@
+{
+  "name": "pw_framework",
+  "version": "1.0.0",
+  "description": "playwright framework",
+  "homepage": "https://github.com/tsailesh/playwright_framework#readme",
+  "bugs": {
+    "url": "https://github.com/tsailesh/playwright_framework/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsailesh/playwright_framework.git"
+  },
+  "license": "ISC",
+  "author": "Sailesh Thapa",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {},
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0"
+  }
+}
