@@ -1,0 +1,93 @@
+2026-08-15 18:56:06 [INFO] Filling username practice
+2026-08-15 18:56:06 [INFO] Filling password
+2026-08-15 18:56:06 [INFO] Clicking login button
+2026-08-15 18:56:09 [INFO] Getting message from dashboard page
+2026-08-15 18:56:12 [INFO] Filling username practice
+2026-08-15 18:56:12 [INFO] Filling password
+2026-08-15 18:56:12 [INFO] Clicking login button
+2026-08-15 18:56:14 [INFO] Getting message from dashboard page
+2026-08-15 18:59:38 [INFO] Filling username practice
+2026-08-15 19:04:35 [INFO] Filling username practice
+2026-08-15 19:10:26 [INFO] Filling username practice
+2026-08-15 19:10:26 [INFO] Filling password
+2026-08-15 19:10:26 [INFO] Clicking login button
+2026-08-15 19:10:26 [INFO] Getting message from dashboard page
+2026-08-15 19:17:14 [INFO] Filling username practice
+2026-08-15 19:17:14 [INFO] Filling password
+2026-08-15 19:17:14 [INFO] Clicking login button
+2026-08-15 19:17:14 [INFO] Getting message from dashboard page
+2026-08-15 19:17:19 [INFO] url() {
+        return this._mainFrame.url();
+      }
+2026-08-15 19:20:29 [INFO] Filling username nice
+2026-08-15 19:20:29 [INFO] Filling password
+2026-08-15 19:20:29 [INFO] Clicking login button
+2026-08-15 19:20:45 [INFO] Getting message from dashboard page
+2026-08-15 19:23:58 [INFO] Filling username nice
+2026-08-15 19:23:58 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:23:58 [INFO] Clicking login button
+2026-08-15 19:24:00 [INFO] Getting message from dashboard page
+2026-08-15 19:25:12 [INFO] Filling username nice
+2026-08-15 19:25:12 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:25:12 [INFO] Clicking login button
+2026-08-15 19:25:14 [INFO] Getting message from dashboard page
+2026-08-15 19:25:14 [INFO] getByText('Your password is invalid!')
+2026-08-15 19:27:53 [INFO] Filling username nice
+2026-08-15 19:27:53 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:27:53 [INFO] Clicking login button
+2026-08-15 19:27:57 [INFO] Getting message from login page
+2026-08-15 19:27:57 [INFO] getByText('Your password is invalid!') ++++++
+2026-08-15 19:32:36 [INFO] Filling username practice
+2026-08-15 19:32:36 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:32:36 [INFO] Clicking login button
+2026-08-15 19:32:36 [INFO] Filling username nice
+2026-08-15 19:32:36 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:32:36 [INFO] Clicking login button
+2026-08-15 19:32:40 [INFO] Getting message from login page
+2026-08-15 19:32:40 [INFO] url() {
+        return this._mainFrame.url();
+      }
+2026-08-15 19:32:42 [INFO] Getting message from login page
+2026-08-15 19:32:42 [INFO] url() {
+        return this._mainFrame.url();
+      }
+2026-08-15 19:34:41 [INFO] Filling username nice
+2026-08-15 19:34:41 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:34:41 [INFO] Clicking login button
+2026-08-15 19:34:42 [INFO] Filling username practice
+2026-08-15 19:34:42 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:34:42 [INFO] Clicking login button
+2026-08-15 19:34:46 [INFO] Getting message from login page
+2026-08-15 19:34:46 [INFO] https://practice.expandtesting.com/secure
+2026-08-15 19:34:47 [INFO] Getting message from login page
+2026-08-15 19:34:47 [INFO] https://practice.expandtesting.com/login
+2026-08-15 19:35:47 [INFO] Filling username practice
+2026-08-15 19:35:47 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:35:47 [INFO] Clicking login button
+2026-08-15 19:35:52 [INFO] Getting message from login page
+2026-08-15 19:35:52 [INFO] https://practice.expandtesting.com/secure
+2026-08-15 19:35:55 [INFO] Filling username nice
+2026-08-15 19:35:55 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:35:55 [INFO] Clicking login button
+2026-08-15 19:36:00 [INFO] Getting message from login page
+2026-08-15 19:36:00 [INFO] https://practice.expandtesting.com/login
+2026-08-15 19:39:19 [INFO] Filling username practice
+2026-08-15 19:39:19 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:39:19 [INFO] Clicking login button
+2026-08-15 19:39:35 [INFO] Getting message from dashboard page
+2026-08-15 19:39:35 [INFO] https://practice.expandtesting.com/secure
+2026-08-15 19:39:38 [INFO] Filling username nice
+2026-08-15 19:39:38 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:39:38 [INFO] Clicking login button
+2026-08-15 19:39:44 [INFO] Getting message from login page
+2026-08-15 19:39:44 [INFO] https://practice.expandtesting.com/login
+2026-08-15 19:41:52 [INFO] Filling username practice
+2026-08-15 19:41:52 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:41:52 [INFO] Clicking login button
+2026-08-15 19:41:52 [INFO] Filling username nice
+2026-08-15 19:41:52 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:41:52 [INFO] Clicking login button
+2026-08-15 19:41:57 [INFO] Getting message from dashboard page
+2026-08-15 19:41:57 [INFO] https://practice.expandtesting.com/secure
+2026-08-15 19:41:57 [INFO] Getting message from login page
+2026-08-15 19:41:57 [INFO] https://practice.expandtesting.com/login

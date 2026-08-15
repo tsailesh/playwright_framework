@@ -1,0 +1,5 @@
+2026-08-15 19:35:55 [INFO] Filling username nice
+2026-08-15 19:35:55 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:35:55 [INFO] Clicking login button
+2026-08-15 19:36:00 [INFO] Getting message from login page
+2026-08-15 19:36:00 [INFO] https://practice.expandtesting.com/login

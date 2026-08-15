@@ -1,0 +1,4 @@
+2026-08-15 18:56:12 [INFO] Filling username practice
+2026-08-15 18:56:12 [INFO] Filling password
+2026-08-15 18:56:12 [INFO] Clicking login button
+2026-08-15 18:56:14 [INFO] Getting message from dashboard page

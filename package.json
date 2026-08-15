@@ -14,13 +14,36 @@
   "author": "Sailesh Thapa",
   "type": "commonjs",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+     "test:staging": "NODE_ENV=staging playwright test",
+    "test:prod": "NODE_ENV=prod playwright test",
+
+    "test:staging:smoke": "NODE_ENV=staging playwright test tests/smoke",
+    "test:prod:smoke": "NODE_ENV=prod playwright test tests/smoke",
+
+    "test:staging:e2e": "NODE_ENV=staging playwright test tests/e2e",
+    "test:prod:e2e": "NODE_ENV=prod playwright test tests/e2e",
+
+    "test:staging:api": "NODE_ENV=staging playwright test tests/api",
+    "test:prod:api": "NODE_ENV=prod playwright test tests/api",
+
+    "test:staging:db": "NODE_ENV=staging playwright test tests/database",
+    "test:prod:db": "NODE_ENV=prod playwright test tests/database",
+
+    "test:staging:regression": "NODE_ENV=staging playwright test --grep @regression",
+    "test:prod:regression": "NODE_ENV=prod playwright test --grep @regression",
+    "test:all": "playwright test",
+    "report": "allure generate allure-results --clean -o allure-report && allure open allure-report"
+  },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
-    "@types/node": "^26.2.0"
+    "@types/node": "^26.2.0",
+    "allure-commandline": "^2.43.0",
+    "allure-playwright": "^3.10.2",
+    "dotenv": "^17.4.2",
+    "dotenv-expand": "^1000.0.0"
   },
   "dependencies": {
-    "dotenv": "^17.4.2",
     "mysql2": "^3.23.3",
     "winston": "^3.19.0"
   }

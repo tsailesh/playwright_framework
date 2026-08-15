@@ -1,0 +1,5 @@
+2026-08-15 19:41:52 [INFO] Filling username practice
+2026-08-15 19:41:52 [INFO] Filling password SuperSecretPassword!
+2026-08-15 19:41:52 [INFO] Clicking login button
+2026-08-15 19:41:57 [INFO] Getting message from dashboard page
+2026-08-15 19:41:57 [INFO] https://practice.expandtesting.com/secure
