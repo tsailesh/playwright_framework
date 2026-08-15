@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test';
+import { test as base,expect} from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
 import { Dashboard } from '../pages/dashboard.page';
 
@@ -16,3 +16,5 @@ export const test = base.extend<{
     await use(dashboardPage);
   },
 });
+
+export {expect};
