@@ -1,6 +1,6 @@
 import {Page} from "@playwright/test";
 
-class basePage{
+export class BasePage{
     protected page: Page;
     constructor(page:Page) {
         this.page = page;
