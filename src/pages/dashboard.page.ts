@@ -2,7 +2,7 @@ import { Locator, Page } from "@playwright/test";
 import { BasePage } from "./base.page";
 
 
-export class dashboard extends BasePage{
+export class Dashboard extends BasePage{
 
     readonly welcomeMessage : Locator;
 
