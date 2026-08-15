@@ -1,4 +1,11 @@
-import mysql, { Pool, PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import mysql, {
+  Pool,
+  PoolConnection,
+  RowDataPacket,
+  ResultSetHeader,
+} from 'mysql2/promise';
+
+type DbParam = string | number | boolean | null | Buffer | Date;
 
 let pool: Pool;
 
@@ -20,28 +27,134 @@ export function getDbPool(): Pool {
   return pool;
 }
 
-export async function query(
+/**
+ * SELECT queries
+ */
+export async function query<T extends RowDataPacket[]>(
   sql: string,
-  params?: any[]
-) {
-  const connection: PoolConnection = await getDbPool().getConnection();
+  params?: DbParam[]
+): Promise<T> {
+  const connection: PoolConnection =
+    await getDbPool().getConnection();
 
   try {
-    const [result] = await connection.query(sql, params);
+    const [result] = await connection.query<T>(
+      sql,
+      params
+    );
+
     return result;
   } finally {
     connection.release();
   }
 }
 
-// Example: check if user exists
-export async function userExists(username: string): Promise<boolean> {
-  const result = await query(
-    'SELECT id FROM users WHERE username = ?',
+/**
+ * INSERT / UPDATE / DELETE
+ */
+export async function execute(
+  sql: string,
+  params?: DbParam[]
+): Promise<ResultSetHeader> {
+  const connection: PoolConnection =
+    await getDbPool().getConnection();
+
+  try {
+    const [result] =
+      await connection.execute<ResultSetHeader>(
+        sql,
+        params
+      );
+
+    return result;
+  } finally {
+    connection.release();
+  }
+}
+
+/**
+ * Check whether a user exists
+ */
+export async function userExists(
+  username: string
+): Promise<boolean> {
+  interface UserRow extends RowDataPacket {
+    id: number;
+  }
+
+  const result = await query<UserRow[]>(
+    `SELECT id
+     FROM users
+     WHERE username = ?
+     LIMIT 1`,
     [username]
   );
 
-  const rows = result as RowDataPacket[];
+  return result.length > 0;
+}
 
-  return rows.length > 0;
+/**
+ * Get user by username
+ */
+export async function getUserByUsername(
+  username: string
+) {
+  interface UserRow extends RowDataPacket {
+    id: number;
+    username: string;
+    email: string;
+  }
+
+  const result = await query<UserRow[]>(
+    `SELECT id, username, email
+     FROM users
+     WHERE username = ?
+     LIMIT 1`,
+    [username]
+  );
+
+  return result[0] ?? null;
+}
+
+/**
+ * Get user count
+ */
+export async function getUserCount(
+  username: string
+): Promise<number> {
+  interface CountRow extends RowDataPacket {
+    count: number;
+  }
+
+  const result = await query<CountRow[]>(
+    `SELECT COUNT(*) AS count
+     FROM users
+     WHERE username = ?`,
+    [username]
+  );
+
+  return Number(result[0].count);
+}
+
+/**
+ * Delete user
+ */
+export async function deleteUser(
+  id: number
+): Promise<number> {
+  const result = await execute(
+    'DELETE FROM users WHERE id = ?',
+    [id]
+  );
+
+  return result.affectedRows;
+}
+
+/**
+ * Close connection pool
+ */
+export async function closeDbPool(): Promise<void> {
+  if (pool) {
+    await pool.end();
+  }
 }
