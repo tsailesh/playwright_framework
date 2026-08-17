@@ -23,8 +23,8 @@ pipeline {
     environment {
         // Inject credentials from Jenkins secrets
         // Create these as "Secret text" credentials with IDs 'test-username' and 'test-password'
-        TEST_USERNAME = credentials('test-username')
-        TEST_PASSWORD = credentials('test-password')
+        TEST_USERNAME = credentials('admin')
+        TEST_PASSWORD = credentials('admin')
         // Set NODE_ENV to the selected environment (staging or prod)
         NODE_ENV = "${params.ENVIRONMENT}"
     }
