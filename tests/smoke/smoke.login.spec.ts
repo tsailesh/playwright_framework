@@ -1,5 +1,4 @@
 import { test, expect } from "../../src/fixtures/test.fixture";
-import { LogoutPage as logout} from "../../src/pages/logout.page";
 import logger from "../../src/utils/logger";
 
 test.describe(" @smoke Smoke: Login Test", () => {
@@ -14,7 +13,6 @@ test.describe(" @smoke Smoke: Login Test", () => {
     loginPage,
     dashboardPage,
     page,
-    logout,
   }) => {
     await loginPage.login(
       process.env.TEST_USERNAME!,
@@ -24,10 +22,10 @@ test.describe(" @smoke Smoke: Login Test", () => {
     await locator.isVisible();
     logger.info(page.url());
     expect(page.url()).toBe(`${process.env.BASE_URL}/secure`);
-    await logout.clicklogout();
+    await dashboardPage.clicklogout();
   });
 
-  test("Login with invalid credentials", async ({ loginPage, page,logout }) => {
+  test("Login with invalid credentials", async ({ loginPage, page }) => {
     await loginPage.login(
       process.env.TEST_INVALID_USERNAME!,
       process.env.TEST_PASSWORD!,
@@ -36,6 +34,5 @@ test.describe(" @smoke Smoke: Login Test", () => {
     await locator.isVisible();
     logger.info(page.url());
     expect(page.url()).toBe(`${process.env.BASE_URL}/login`);
-    await logout.clicklogout();
   });
 });
