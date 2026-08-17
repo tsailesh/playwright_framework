@@ -1,5 +1,0 @@
-2026-08-15 19:27:53 [INFO] Filling username nice
-2026-08-15 19:27:53 [INFO] Filling password SuperSecretPassword!
-2026-08-15 19:27:53 [INFO] Clicking login button
-2026-08-15 19:27:57 [INFO] Getting message from login page
-2026-08-15 19:27:57 [INFO] getByText('Your password is invalid!') ++++++

@@ -1,0 +1,3 @@
+2026-08-17 18:56:44 [INFO] Filling username practice
+2026-08-17 18:56:44 [INFO] Filling password SuperSecretPassword!
+2026-08-17 18:56:44 [INFO] Clicking login button

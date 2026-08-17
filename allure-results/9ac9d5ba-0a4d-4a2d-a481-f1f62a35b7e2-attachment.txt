@@ -1,0 +1,6 @@
+Absolute  /Users/sailesh/Desktop/pw_framework/src/data/notes-data-api.json
+2026-08-17 16:35:50 [INFO] Title: COMPUTER
+2026-08-17 16:35:50 [INFO] Description: COMPUTER DESCRIPTION
+2026-08-17 16:35:50 [INFO] Request url is ::: https://practice.expandtesting.com/notes/api/notes
+2026-08-17 16:35:50 [INFO] Response: {"success":true,"status":200,"message":"Note successfully created","data":{"id":"6a82e78a4d111b0295541b66","title":"COMPUTER","description":"COMPUTER DESCRIPTION","category":"Personal","completed":false,"created_at":"2026-08-17T10:50:50.530Z","updated_at":"2026-08-17T10:50:50.530Z","user_id":"6a81f8ef4d111b029553e2c3"}}
+2026-08-17 16:35:50 [INFO] Status: 200

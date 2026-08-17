@@ -39,6 +39,7 @@ export class LoginPage extends BasePage {
     await this.fillPassword(password);
     logger.info("Clicking login button")
     await this.clickLoginButton();
+    logger.info("Waiting to load")
     await this.waitForLoad();
   }
 

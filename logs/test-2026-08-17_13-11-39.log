@@ -1,0 +1,23 @@
+2026-08-17 18:56:39 [INFO] Request url is ::: https://practice.expandtesting.com/notes/api/users/login
+2026-08-17 18:56:39 [INFO] Title: COMPUTER
+2026-08-17 18:56:39 [INFO] Description: COMPUTER DESCRIPTION
+2026-08-17 18:56:39 [INFO] Request url is ::: https://practice.expandtesting.com/notes/api/notes
+2026-08-17 18:56:40 [INFO] {"_apiName":"APIResponse","_request":{"_type":"APIRequestContext","_guid":"request-context@815e7d509ddeba8083532712e0a27433"},"_initializer":{"fetchUid":"c1165c514c0b27e9e200e13c5bf3c398","url":"https://practice.expandtesting.com/notes/api/users/login","status":200,"statusText":"OK","headers":[{"name":"access-control-allow-origin","value":"*"},{"name":"access-control-allow-credentials","value":"true"},{"name":"access-control-allow-methods","value":"GET, POST, PUT, DELETE, PATCH"},{"name":"access-control-allow-headers","value":"Origin, X-Requested-With, Authorization, Content-Type, Accept, X-Auth-Token"},{"name":"content-type","value":"application/json; charset=utf-8"},{"name":"content-encoding","value":"br"},{"name":"etag","value":"W/\"d4-4RBq4ifkfYfaSUOKtriIQ7EaqLo\""},{"name":"set-cookie","value":"express:sess=eyJmbGFzaCI6e319; path=/; httponly"},{"name":"set-cookie","value":"express:sess.sig=tdt42nQZiQvICqmrvHQ1_16fHk0; path=/; httponly"},{"name":"date","value":"Mon, 17 Aug 2026 13:11:39 GMT"},{"name":"connection","value":"keep-alive"},{"name":"keep-alive","value":"timeout=5"},{"name":"transfer-encoding","value":"chunked"}],"securityDetails":{"issuer":"YE1","protocol":"TLSv1.3","subjectName":"practice.expandtesting.com","validFrom":1784589823,"validTo":1792365822},"serverAddr":{"ipAddress":"2a09:8280:1::69:2548","port":443},"timing":{"startTime":1786972299405,"domainLookupStart":0,"domainLookupEnd":72.08500000000004,"connectStart":72.08500000000004,"secureConnectionStart":171.1679999999999,"connectEnd":283.16100000000006,"requestStart":283.16100000000006,"responseStart":730.0999999999999},"responseEndTiming":735.721},"_headers":{"_headersMap":{"_map":{}},"_headersArray":[{"name":"access-control-allow-origin","value":"*"},{"name":"access-control-allow-credentials","value":"true"},{"name":"access-control-allow-methods","value":"GET, POST, PUT, DELETE, PATCH"},{"name":"access-control-allow-headers","value":"Origin, X-Requested-With, Authorization, Content-Type, Accept, X-Auth-Token"},{"name":"content-type","value":"application/json; charset=utf-8"},{"name":"content-encoding","value":"br"},{"name":"etag","value":"W/\"d4-4RBq4ifkfYfaSUOKtriIQ7EaqLo\""},{"name":"set-cookie","value":"express:sess=eyJmbGFzaCI6e319; path=/; httponly"},{"name":"set-cookie","value":"express:sess.sig=tdt42nQZiQvICqmrvHQ1_16fHk0; path=/; httponly"},{"name":"date","value":"Mon, 17 Aug 2026 13:11:39 GMT"},{"name":"connection","value":"keep-alive"},{"name":"keep-alive","value":"timeout=5"},{"name":"transfer-encoding","value":"chunked"}]}}
+2026-08-17 18:56:40 [INFO] Response: {"success":true,"status":200,"message":"Note successfully created","data":{"id":"6a83088b4d111b02955422f1","title":"COMPUTER","description":"COMPUTER DESCRIPTION","category":"Personal","completed":false,"created_at":"2026-08-17T13:11:40.005Z","updated_at":"2026-08-17T13:11:40.005Z","user_id":"6a81f8ef4d111b029553e2c3"}}
+2026-08-17 18:56:40 [INFO] Status: 200
+2026-08-17 18:56:43 [INFO] Filling username wrong
+2026-08-17 18:56:43 [INFO] Filling password wrong
+2026-08-17 18:56:43 [INFO] Clicking login button
+2026-08-17 18:56:44 [INFO] Filling username practice
+2026-08-17 18:56:44 [INFO] Filling password SuperSecretPassword!
+2026-08-17 18:56:44 [INFO] Clicking login button
+2026-08-17 18:56:45 [INFO] Filling username nice
+2026-08-17 18:56:45 [INFO] Filling password SuperSecretPassword!
+2026-08-17 18:56:45 [INFO] Clicking login button
+2026-08-17 18:56:45 [INFO] Filling username practice
+2026-08-17 18:56:45 [INFO] Filling password SuperSecretPassword!
+2026-08-17 18:56:45 [INFO] Clicking login button
+2026-08-17 18:56:50 [INFO] Getting message from login page
+2026-08-17 18:56:50 [INFO] https://practice.expandtesting.com/login
+2026-08-17 18:56:50 [INFO] Getting message from dashboard page
+2026-08-17 18:56:50 [INFO] https://practice.expandtesting.com/secure

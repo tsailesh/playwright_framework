@@ -1,0 +1,3 @@
+2026-08-17 18:56:43 [INFO] Filling username wrong
+2026-08-17 18:56:43 [INFO] Filling password wrong
+2026-08-17 18:56:43 [INFO] Clicking login button
