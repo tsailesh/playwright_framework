@@ -2,9 +2,23 @@ pipeline {
     agent any
 
     parameters {
-        choice(name: 'ENVIRONMENT', choices: ['staging', 'prod'], description: 'Target environment')
-        choice(name: 'TEST_SUITE', choices: ['smoke','all','e2e', 'api', 'db', 'regression'], description: 'Test suite')
-        booleanParam(name: 'HEADED', defaultValue: false, description: 'Run headed?')
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['staging', 'prod'],
+            description: 'Target environment'
+        )
+
+        choice(
+            name: 'TEST_SUITE',
+            choices: ['smoke', 'all', 'e2e', 'api', 'db', 'regression'],
+            description: 'Test suite'
+        )
+
+        booleanParam(
+            name: 'HEADED',
+            defaultValue: false,
+            description: 'Run headed?'
+        )
     }
 
     environment {
@@ -12,19 +26,41 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') { steps { checkout scm } }
 
-        stage('Print Parameters') {
+        /*
+         * =========================================
+         * CHECKOUT
+         * =========================================
+         */
+        stage('Checkout') {
             steps {
-                echo "========================================="
-                echo "🚀 Selected Parameters:"
-                echo "  ENVIRONMENT = ${params.ENVIRONMENT}"
-                echo "  TEST_SUITE  = ${params.TEST_SUITE}"
-                echo "  HEADED      = ${params.HEADED}"
-                echo "========================================="
+                checkout scm
             }
         }
 
+        /*
+         * =========================================
+         * PRINT PARAMETERS
+         * =========================================
+         */
+        stage('Print Parameters') {
+            steps {
+                echo """
+=========================================
+🚀 Selected Parameters:
+  ENVIRONMENT = ${params.ENVIRONMENT}
+  TEST_SUITE  = ${params.TEST_SUITE}
+  HEADED      = ${params.HEADED}
+=========================================
+"""
+            }
+        }
+
+        /*
+         * =========================================
+         * NODE.JS
+         * =========================================
+         */
         stage('Setup Node.js') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -34,6 +70,11 @@ pipeline {
             }
         }
 
+        /*
+         * =========================================
+         * INSTALL DEPENDENCIES
+         * =========================================
+         */
         stage('Install Dependencies') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -42,6 +83,11 @@ pipeline {
             }
         }
 
+        /*
+         * =========================================
+         * INSTALL PLAYWRIGHT BROWSERS
+         * =========================================
+         */
         stage('Install Playwright Browsers') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -50,10 +96,16 @@ pipeline {
             }
         }
 
+        /*
+         * =========================================
+         * RUN TESTS
+         * =========================================
+         */
         stage('Run Tests') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
                     script {
+
                         withCredentials([
                             usernamePassword(
                                 credentialsId: 'test-credentials',
@@ -61,10 +113,38 @@ pipeline {
                                 passwordVariable: 'TEST_PASSWORD'
                             )
                         ]) {
-                            def command = (params.TEST_SUITE == 'all')
-                                ? "npm run test:${params.ENVIRONMENT} ${params.HEADED ? '--headed' : ''}"
-                                : "npm run test:${params.ENVIRONMENT}:${params.TEST_SUITE} ${params.HEADED ? '--headed' : ''}"
-                            echo "Running: ${command}"
+
+                            def command
+
+                            if (params.TEST_SUITE == 'all') {
+                                command = "npm run test:${params.ENVIRONMENT}"
+                            } else {
+                                command = "npm run test:${params.ENVIRONMENT}:${params.TEST_SUITE}"
+                            }
+
+                            if (params.HEADED) {
+                                command += " --headed"
+                            }
+
+                            echo """
+=========================================
+🧪 Running Playwright Tests
+=========================================
+Environment : ${params.ENVIRONMENT}
+Test Suite  : ${params.TEST_SUITE}
+Headed      : ${params.HEADED}
+Command     : ${command}
+=========================================
+"""
+
+                            /*
+                             * IMPORTANT:
+                             *
+                             * We do NOT catch the Playwright exit code.
+                             *
+                             * Exit 0  -> Jenkins SUCCESS
+                             * Exit != 0 -> Jenkins FAILURE
+                             */
                             sh command
                         }
                     }
@@ -72,56 +152,151 @@ pipeline {
             }
         }
 
+        /*
+         * =========================================
+         * REPORT LINKS
+         * =========================================
+         */
         stage('Print Report Links') {
             steps {
-                script {
-                    def buildUrl = env.BUILD_URL ?: ''
-                    echo "========================================="
-                    echo "📊 Report Links (once published):"
-                    echo "  HTML Report: ${buildUrl}Playwright_20Test_20Report"
-                    echo "  Allure Report: ${buildUrl}allure"
-                    echo "========================================="
-                }
+                echo """
+=========================================
+📊 Report Links
+=========================================
+
+HTML Report:
+${env.BUILD_URL}Playwright_20Test_20Report
+
+Allure Report:
+${env.BUILD_URL}allure
+
+=========================================
+"""
             }
         }
     }
 
+    /*
+     * =========================================
+     * POST ACTIONS
+     * =========================================
+     */
     post {
+
         always {
-            // Publish HTML report
-            publishHTML([
-                reportDir: 'reports/html-report',
-                reportFiles: 'index.html',
-                reportName: 'Playwright Test Report',
-                keepAll: true,
-                alwaysLinkToLastBuild: true,
-                allowMissing: true
-            ])
 
-            // Publish Allure report
-            allure([
-                includeProperties: false,
-                jdk: '',
-                properties: [],
-                reportBuildPolicy: 'ALWAYS',
-                results: [[path: 'reports/allure-results']]
-            ])
-
-            // ─── FIX: Override UNSTABLE to SUCCESS ───
             script {
-                if (currentBuild.result == 'UNSTABLE') {
-                    currentBuild.result = 'SUCCESS'
-                    echo "✅ Build status changed from UNSTABLE to SUCCESS because all tests passed."
+
+                /*
+                 * =========================================
+                 * PUBLISH PLAYWRIGHT HTML REPORT
+                 * =========================================
+                 *
+                 * Report publishing must NOT change
+                 * the Playwright test result.
+                 */
+                catchError(
+                    buildResult: 'SUCCESS',
+                    stageResult: 'SUCCESS'
+                ) {
+
+                    publishHTML([
+                        reportDir: 'reports/html-report',
+                        reportFiles: 'index.html',
+                        reportName: 'Playwright Test Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: true
+                    ])
+                }
+
+                /*
+                 * =========================================
+                 * PUBLISH ALLURE REPORT
+                 * =========================================
+                 *
+                 * Allure publishing must NOT change
+                 * the Playwright test result.
+                 */
+                catchError(
+                    buildResult: 'SUCCESS',
+                    stageResult: 'SUCCESS'
+                ) {
+
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [
+                            [
+                                path: 'reports/allure-results'
+                            ]
+                        ]
+                    ])
                 }
             }
 
+            /*
+             * =========================================
+             * CLEAN WORKSPACE
+             * =========================================
+             */
             cleanWs()
         }
+
+        /*
+         * =========================================
+         * SUCCESS
+         * =========================================
+         */
         success {
-            echo '✅ All tests passed!'
+            echo """
+=========================================
+✅ BUILD SUCCESS
+=========================================
+All Playwright tests passed.
+Reports have been published.
+=========================================
+"""
         }
+
+        /*
+         * =========================================
+         * FAILURE
+         * =========================================
+         */
         failure {
-            echo '❌ Some tests failed. Check the reports above.'
+            echo """
+=========================================
+❌ BUILD FAILED
+=========================================
+One or more Playwright tests failed.
+
+Check:
+- Console output
+- Playwright HTML Report
+- Allure Report
+=========================================
+"""
+        }
+
+        /*
+         * =========================================
+         * UNSTABLE
+         * =========================================
+         */
+        unstable {
+            echo """
+=========================================
+⚠️ BUILD UNSTABLE
+=========================================
+Jenkins marked the build as UNSTABLE.
+
+Check the Jenkins console output and
+report publishing steps for the cause.
+=========================================
+"""
         }
     }
 }
