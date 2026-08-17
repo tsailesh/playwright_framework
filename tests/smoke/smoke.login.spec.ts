@@ -15,8 +15,8 @@ test.describe(" @smoke Smoke: Login Test", () => {
     page,
   }) => {
     await loginPage.login(
-      process.env.TEST_USERNAME!,
-      process.env.TEST_PASSWORD!,
+      process.env.TESTER_USERNAME!,
+      process.env.TESTER_PASSWORD!,
     );
     const locator = await dashboardPage.getMessage();
     await locator.isVisible();
@@ -28,7 +28,7 @@ test.describe(" @smoke Smoke: Login Test", () => {
   test("Login with invalid credentials", async ({ loginPage, page }) => {
     await loginPage.login(
       process.env.TEST_INVALID_USERNAME!,
-      process.env.TEST_PASSWORD!,
+      process.env.TESTER_PASSWORD!,
     );
     const locator = await loginPage.getMessage();
     await locator.isVisible();
