@@ -8,11 +8,13 @@ pipeline {
             choices: ['staging', 'prod'],
             description: 'Target environment (staging or prod)'
         )
+
         choice(
             name: 'TEST_SUITE',
             choices: ['all', 'smoke', 'e2e', 'api', 'db', 'regression'],
             description: 'Test suite to run'
         )
+
         booleanParam(
             name: 'HEADED',
             defaultValue: false,
@@ -21,25 +23,24 @@ pipeline {
     }
 
     environment {
-        // Inject credentials from Jenkins secrets
-        // Create these as "Secret text" credentials with IDs 'test-username' and 'test-password'
-        TEST_USERNAME = credentials('admin')
-        TEST_PASSWORD = credentials('admin')
-        // Set NODE_ENV to the selected environment (staging or prod)
+        // Jenkins credentials
+        TEST_USERNAME = credentials('test-username')
+        TEST_PASSWORD = credentials('test-password')
+
+        // Selected environment
         NODE_ENV = "${params.ENVIRONMENT}"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                // Clones the repository configured in the job
                 checkout scm
             }
         }
 
         stage('Setup Node.js') {
             steps {
-                // Use the NodeJS plugin – ensure a Node.js installation named 'node-18' exists in Jenkins
                 nodejs(nodeJSInstallationName: 'node-18') {
                     sh 'node --version'
                     sh 'npm --version'
@@ -50,7 +51,6 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
-                    // Clean install – uses package-lock.json for reproducible builds
                     sh 'npm ci'
                 }
             }
@@ -59,7 +59,8 @@ pipeline {
         stage('Install Playwright Browsers') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
-                    sh 'npx playwright install --with-deps chromium firefox webkit'
+                    // macOS Jenkins agent
+                    sh 'npx playwright install chromium firefox webkit'
                 }
             }
         }
@@ -68,19 +69,23 @@ pipeline {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
                     script {
-                        // Build the npm command dynamically based on parameters
                         def suite = params.TEST_SUITE
-                        def env = params.ENVIRONMENT
+                        def environment = params.ENVIRONMENT
                         def headed = params.HEADED ? '--headed' : ''
-                        // Map test suite to npm script: test:${env}:${suite}
-                        // For 'all', use just test:${env}
+
                         def command
+
                         if (suite == 'all') {
-                            command = "npm run test:${env} ${headed}"
+                            command = "npm run test:${environment} ${headed}"
                         } else {
-                            command = "npm run test:${env}:${suite} ${headed}"
+                            command = "npm run test:${environment}:${suite} ${headed}"
                         }
+
+                        echo "Environment: ${environment}"
+                        echo "Test Suite: ${suite}"
+                        echo "Headed: ${params.HEADED}"
                         echo "Running: ${command}"
+
                         sh command
                     }
                 }
@@ -89,7 +94,6 @@ pipeline {
 
         stage('Publish Reports') {
             steps {
-                // Use HTML Publisher Plugin to show Playwright's built‑in report
                 publishHTML([
                     reportDir: 'reports/html-report',
                     reportFiles: 'index.html',
@@ -97,30 +101,37 @@ pipeline {
                     reportTitles: '',
                     keepAll: true,
                     alwaysLinkToLastBuild: true,
-                    allowMissing: false
+                    allowMissing: true
                 ])
-                // If you also use Allure, uncomment the following:
-                // allure([
-                //     includeProperties: false,
-                //     jdk: '',
-                //     properties: [],
-                //     reportBuildPolicy: 'ALWAYS',
-                //     results: [[path: 'reports/allure-results']]
-                // ])
+            }
+        }
+
+        /*
+         * Keep cleanWs() inside a stage so Jenkins has
+         * the workspace/FilePath context required by the step.
+         */
+        stage('Cleanup') {
+            steps {
+                cleanWs(
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true
+                )
             }
         }
     }
 
     post {
-        always {
-            // Clean up workspace to save disk space
-            cleanWs()
-        }
         success {
             echo '✅ All tests passed!'
         }
+
         failure {
-            echo '❌ Some tests failed. Check the report above.'
+            echo '❌ Some tests failed. Check the Jenkins console and Playwright report.'
+        }
+
+        aborted {
+            echo '⚠️ Build was aborted.'
         }
     }
 }
