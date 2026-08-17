@@ -9,7 +9,7 @@ pipeline {
         )
         choice(
             name: 'TEST_SUITE',
-            choices: ['all', 'smoke', 'e2e', 'api', 'db', 'regression'],
+            choices: ['smoke','all','e2e', 'api', 'db', 'regression'],
             description: 'Test suite to run'
         )
         booleanParam(
@@ -20,20 +20,16 @@ pipeline {
     }
 
     environment {
-        // Only set NODE_ENV here; credentials will be injected later
         NODE_ENV = "${params.ENVIRONMENT}"
     }
 
     stages {
         stage('Checkout') {
-            steps {
-                checkout scm
-            }
+            steps { checkout scm }
         }
 
         stage('Setup Node.js') {
             steps {
-                // Use NodeJS plugin; ensure 'node-18' is configured in Jenkins Tools
                 nodejs(nodeJSInstallationName: 'node-18') {
                     sh 'node --version'
                     sh 'npm --version'
@@ -61,7 +57,6 @@ pipeline {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
                     script {
-                        // Inject the combined credential as environment variables
                         withCredentials([
                             usernamePassword(
                                 credentialsId: 'test-credentials',
@@ -83,30 +78,43 @@ pipeline {
             }
         }
 
-        stage('Publish Reports') {
-            steps {
-                publishHTML([
-                    reportDir: 'reports/html-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Playwright Test Report',
-                    reportTitles: '',
-                    keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    allowMissing: false
-                ])
-            }
-        }
+        // Optional: you can still keep a stage to generate Allure report,
+        // but it's simpler to do it in post.
     }
 
     post {
         always {
+            // 1. Publish Playwright HTML report (if it exists)
+            publishHTML([
+                reportDir: 'reports/html-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright Test Report',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: true    // don't fail if report missing
+            ])
+
+            // 2. Generate and publish Allure report
+            // Assumes Allure plugin is installed and an Allure installation named 'allure' exists.
+            // The results must be in 'reports/allure-results' (configured in playwright.config.ts)
+            allure([
+                includeProperties: false,
+                jdk: '',
+                properties: [],
+                reportBuildPolicy: 'ALWAYS',
+                results: [[path: 'reports/allure-results']]
+            ])
+
+            // 3. Clean workspace
             cleanWs()
         }
+
         success {
             echo '✅ All tests passed!'
         }
+
         failure {
-            echo '❌ Some tests failed. Check the Jenkins console and Playwright report.'
+            echo '❌ Some tests failed. Check the reports above.'
         }
     }
 }
