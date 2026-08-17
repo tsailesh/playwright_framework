@@ -1,38 +1,30 @@
 pipeline {
     agent any
 
-    // Build parameters – user selects these when triggering the job
     parameters {
         choice(
             name: 'ENVIRONMENT',
             choices: ['staging', 'prod'],
             description: 'Target environment (staging or prod)'
         )
-
         choice(
             name: 'TEST_SUITE',
             choices: ['all', 'smoke', 'e2e', 'api', 'db', 'regression'],
             description: 'Test suite to run'
         )
-
         booleanParam(
             name: 'HEADED',
             defaultValue: false,
-            description: 'Run tests in headed mode? (for debugging)'
+            description: 'Run tests in headed mode?'
         )
     }
 
     environment {
-        // Jenkins credentials
-        TEST_USERNAME = credentials('test-username')
-        TEST_PASSWORD = credentials('test-password')
-
-        // Selected environment
+        // Only set NODE_ENV here; credentials will be injected later
         NODE_ENV = "${params.ENVIRONMENT}"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -41,6 +33,7 @@ pipeline {
 
         stage('Setup Node.js') {
             steps {
+                // Use NodeJS plugin; ensure 'node-18' is configured in Jenkins Tools
                 nodejs(nodeJSInstallationName: 'node-18') {
                     sh 'node --version'
                     sh 'npm --version'
@@ -59,8 +52,7 @@ pipeline {
         stage('Install Playwright Browsers') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
-                    // macOS Jenkins agent
-                    sh 'npx playwright install chromium firefox webkit'
+                    sh 'npx playwright install --with-deps chromium firefox webkit'
                 }
             }
         }
@@ -69,24 +61,23 @@ pipeline {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
                     script {
-                        def suite = params.TEST_SUITE
-                        def environment = params.ENVIRONMENT
-                        def headed = params.HEADED ? '--headed' : ''
-
-                        def command
-
-                        if (suite == 'all') {
-                            command = "npm run test:${environment} ${headed}"
-                        } else {
-                            command = "npm run test:${environment}:${suite} ${headed}"
+                        // Inject the combined credential as environment variables
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: 'test-credentials',
+                                usernameVariable: 'TEST_USERNAME',
+                                passwordVariable: 'TEST_PASSWORD'
+                            )
+                        ]) {
+                            def suite = params.TEST_SUITE
+                            def env = params.ENVIRONMENT
+                            def headed = params.HEADED ? '--headed' : ''
+                            def command = (suite == 'all')
+                                ? "npm run test:${env} ${headed}"
+                                : "npm run test:${env}:${suite} ${headed}"
+                            echo "Running: ${command}"
+                            sh command
                         }
-
-                        echo "Environment: ${environment}"
-                        echo "Test Suite: ${suite}"
-                        echo "Headed: ${params.HEADED}"
-                        echo "Running: ${command}"
-
-                        sh command
                     }
                 }
             }
@@ -101,37 +92,21 @@ pipeline {
                     reportTitles: '',
                     keepAll: true,
                     alwaysLinkToLastBuild: true,
-                    allowMissing: true
+                    allowMissing: false
                 ])
-            }
-        }
-
-        /*
-         * Keep cleanWs() inside a stage so Jenkins has
-         * the workspace/FilePath context required by the step.
-         */
-        stage('Cleanup') {
-            steps {
-                cleanWs(
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true
-                )
             }
         }
     }
 
     post {
+        always {
+            cleanWs()
+        }
         success {
             echo '✅ All tests passed!'
         }
-
         failure {
             echo '❌ Some tests failed. Check the Jenkins console and Playwright report.'
-        }
-
-        aborted {
-            echo '⚠️ Build was aborted.'
         }
     }
 }
