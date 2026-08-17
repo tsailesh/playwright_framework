@@ -24,13 +24,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        // ─── NEW: Print selected parameters ───
+        stage('Checkout') { steps { checkout scm } }
         stage('Print Parameters') {
             steps {
                 echo "========================================="
@@ -41,7 +35,6 @@ pipeline {
                 echo "========================================="
             }
         }
-
         stage('Setup Node.js') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -50,7 +43,6 @@ pipeline {
                 }
             }
         }
-
         stage('Install Dependencies') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -58,7 +50,6 @@ pipeline {
                 }
             }
         }
-
         stage('Install Playwright Browsers') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -66,7 +57,6 @@ pipeline {
                 }
             }
         }
-
         stage('Run Tests') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -78,12 +68,9 @@ pipeline {
                                 passwordVariable: 'TEST_PASSWORD'
                             )
                         ]) {
-                            def suite = params.TEST_SUITE
-                            def env = params.ENVIRONMENT
-                            def headed = params.HEADED ? '--headed' : ''
-                            def command = (suite == 'all')
-                                ? "npm run test:${env} ${headed}"
-                                : "npm run test:${env}:${suite} ${headed}"
+                            def command = (params.TEST_SUITE == 'all')
+                                ? "npm run test:${params.ENVIRONMENT} ${params.HEADED ? '--headed' : ''}"
+                                : "npm run test:${params.ENVIRONMENT}:${params.TEST_SUITE} ${params.HEADED ? '--headed' : ''}"
                             echo "Running: ${command}"
                             sh command
                         }
@@ -95,7 +82,7 @@ pipeline {
 
     post {
         always {
-            // 1. Publish Playwright HTML report (if it exists)
+            // Publish HTML report
             publishHTML([
                 reportDir: 'reports/html-report',
                 reportFiles: 'index.html',
@@ -105,8 +92,9 @@ pipeline {
                 allowMissing: true
             ])
 
-            // 2. Generate and publish Allure report
+            // Publish Allure report – tool name must match the configured name
             allure([
+                tool: 'allure',    // ← add this line
                 includeProperties: false,
                 jdk: '',
                 properties: [],
@@ -114,16 +102,9 @@ pipeline {
                 results: [[path: 'reports/allure-results']]
             ])
 
-            // 3. Clean workspace
             cleanWs()
         }
-
-        success {
-            echo '✅ All tests passed!'
-        }
-
-        failure {
-            echo '❌ Some tests failed. Check the reports above.'
-        }
+        success { echo '✅ All tests passed!' }
+        failure { echo '❌ Some tests failed. Check the reports above.' }
     }
 }
