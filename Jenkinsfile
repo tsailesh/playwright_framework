@@ -25,6 +25,7 @@ pipeline {
 
     stages {
         stage('Checkout') { steps { checkout scm } }
+
         stage('Print Parameters') {
             steps {
                 echo "========================================="
@@ -35,6 +36,7 @@ pipeline {
                 echo "========================================="
             }
         }
+
         stage('Setup Node.js') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -43,6 +45,7 @@ pipeline {
                 }
             }
         }
+
         stage('Install Dependencies') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -50,6 +53,7 @@ pipeline {
                 }
             }
         }
+
         stage('Install Playwright Browsers') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -57,6 +61,7 @@ pipeline {
                 }
             }
         }
+
         stage('Run Tests') {
             steps {
                 nodejs(nodeJSInstallationName: 'node-18') {
@@ -82,7 +87,7 @@ pipeline {
 
     post {
         always {
-            // Publish HTML report
+            // Publish Playwright HTML report
             publishHTML([
                 reportDir: 'reports/html-report',
                 reportFiles: 'index.html',
@@ -92,9 +97,12 @@ pipeline {
                 allowMissing: true
             ])
 
-            // Publish Allure report – tool name must match the configured name
+            // Publish Allure report – uses the default Allure installation
+            // If you have multiple installations, you can specify the tool name
+            // by adding 'tool: 'your-tool-name'' – but this may not be supported
+            // in older plugin versions. Remove it if you get "Invalid parameter" error.
             allure([
-                tool: 'allure',    // ← add this line
+                // tool: 'allure',   // <-- commented out to avoid error
                 includeProperties: false,
                 jdk: '',
                 properties: [],
@@ -104,7 +112,11 @@ pipeline {
 
             cleanWs()
         }
-        success { echo '✅ All tests passed!' }
-        failure { echo '❌ Some tests failed. Check the reports above.' }
+        success {
+            echo '✅ All tests passed!'
+        }
+        failure {
+            echo '❌ Some tests failed. Check the reports above.'
+        }
     }
 }
