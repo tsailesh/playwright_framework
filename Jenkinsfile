@@ -25,7 +25,21 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps { checkout scm }
+            steps {
+                checkout scm
+            }
+        }
+
+        // ─── NEW: Print selected parameters ───
+        stage('Print Parameters') {
+            steps {
+                echo "========================================="
+                echo "🚀 Selected Parameters:"
+                echo "  ENVIRONMENT = ${params.ENVIRONMENT}"
+                echo "  TEST_SUITE  = ${params.TEST_SUITE}"
+                echo "  HEADED      = ${params.HEADED}"
+                echo "========================================="
+            }
         }
 
         stage('Setup Node.js') {
@@ -77,9 +91,6 @@ pipeline {
                 }
             }
         }
-
-        // Optional: you can still keep a stage to generate Allure report,
-        // but it's simpler to do it in post.
     }
 
     post {
@@ -91,12 +102,10 @@ pipeline {
                 reportName: 'Playwright Test Report',
                 keepAll: true,
                 alwaysLinkToLastBuild: true,
-                allowMissing: true    // don't fail if report missing
+                allowMissing: true
             ])
 
             // 2. Generate and publish Allure report
-            // Assumes Allure plugin is installed and an Allure installation named 'allure' exists.
-            // The results must be in 'reports/allure-results' (configured in playwright.config.ts)
             allure([
                 includeProperties: false,
                 jdk: '',
