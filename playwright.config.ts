@@ -1,86 +1,175 @@
 /// <reference types="node" />
-import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
+import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import path from 'path';
-// Determine which .env file to load
-const env = process.env.NODE_ENV || 'staging'; // default to staging
-const envFile = path.resolve(process.cwd(), `.env.${env}`);
 
-// Load and expand variables
-const myEnv = dotenv.config({ path: envFile });
+/**
+ * Determine which .env file to load.
+ */
+const env = process.env.NODE_ENV || 'staging';
+
+const envFile = path.resolve(
+  process.cwd(),
+  `.env.${env}`,
+);
+
+/**
+ * Load and expand environment variables.
+ */
+const myEnv = dotenv.config({
+  path: envFile,
+});
+
 dotenvExpand.expand(myEnv);
 
-// Fallback: if file not found, you might want to load .env
+/**
+ * Fallback to .env if environment-specific file is not found.
+ */
 if (myEnv.error) {
-  console.warn(`⚠️  Could not load ${envFile}, falling back to .env`);
+  console.warn(
+    `⚠️ Could not load ${envFile}, falling back to .env`,
+  );
+
   dotenv.config();
 }
 
 /**
- * See https://playwright.dev/docs/test-configuration.
+ * Playwright configuration.
  */
 export default defineConfig({
+  /**
+   * Test directory.
+   */
   testDir: './tests',
-  /* Run tests in files in parallel */
+
+  /**
+   * Run tests in files in parallel.
+   */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
+
+  /**
+   * Fail the build on CI if test.only is accidentally committed.
+   */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
+
+  /**
+   * Retry failed tests on CI.
+   */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
+
+  /**
+   * Use one worker on CI.
+   */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+
+  /**
+   * Reporters.
+   */
   reporter: [
-    ['html', { outputFolder: 'reports/html-report' }],
-    ['allure-playwright', { resultDir: 'reports/allure-results' }],
+    [
+      'html',
+      {
+        outputFolder: 'reports/html-report',
+      },
+    ],
+
+    [
+      'allure-playwright',
+      {
+        resultsDir: 'reports/allure-results',
+      },
+    ],
+
     ['list'],
   ],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: process.env.BASE_URL||'https://practice.expandtesting.com',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+  /**
+   * Shared settings for all projects.
+   */
+  use: {
+    /**
+     * Base URL.
+     */
+    baseURL:
+      process.env.BASE_URL ||
+      'https://practice.expandtesting.com',
+
+    /**
+     * Collect trace when retrying.
+     */
     trace: 'on-first-retry',
+
+    /**
+     * Screenshot only on failure.
+     */
     screenshot: 'only-on-failure',
+
+    /**
+     * Retain video only on failure.
+     */
     video: 'retain-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /**
+   * Browser projects.
+   */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+
+      use: {
+        ...devices['Desktop Chrome'],
+      },
     },
 
-    /* Test against mobile viewports. */
+    /**
+     * Mobile Chrome.
+     */
     // {
     //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
+    //   use: {
+    //     ...devices['Pixel 5'],
+    //   },
     // },
 
-    /* Test against branded browsers. */
+    /**
+     * Mobile Safari.
+     */
+    // {
+    //   name: 'Mobile Safari',
+    //   use: {
+    //     ...devices['iPhone 12'],
+    //   },
+    // },
+
+    /**
+     * Microsoft Edge.
+     */
     // {
     //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    //   use: {
+    //     ...devices['Desktop Edge'],
+    //     channel: 'msedge',
+    //   },
     // },
+
+    /**
+     * Google Chrome.
+     */
     // {
     //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    //   use: {
+    //     ...devices['Desktop Chrome'],
+    //     channel: 'chrome',
+    //   },
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /**
+   * Run local development server before tests.
+   */
   // webServer: {
   //   command: 'npm run start',
   //   url: 'http://localhost:3000',
