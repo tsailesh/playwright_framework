@@ -19,9 +19,12 @@ test.describe(" @smoke Smoke: Login Test", () => {
       process.env.TESTER_PASSWORD!,
     );
     const locator = await dashboardPage.getMessage();
+    loginPage.waitForLoad();
     await locator.isVisible();
     logger.info(page.url());
+    loginPage.waitForLoad();
     expect(page.url()).toBe(`${process.env.BASE_URL}/secure`);
+    loginPage.waitForLoad();
     await dashboardPage.clicklogout();
   });
 
