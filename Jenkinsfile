@@ -56,7 +56,7 @@ Headed      : ${params.HEADED}
         }
 
         // =========================================================
-        // NODE.JS
+        // SETUP NODE
         // =========================================================
 
         stage('Setup Node.js') {
@@ -94,6 +94,30 @@ Headed      : ${params.HEADED}
                 nodejs(nodeJSInstallationName: 'node-18') {
                     sh 'npx playwright install --with-deps chromium firefox webkit'
                 }
+            }
+        }
+
+        // =========================================================
+        // CLEAN PREVIOUS REPORTS
+        // =========================================================
+
+        stage('Clean Previous Reports') {
+            steps {
+                sh '''
+                    echo "========================================="
+                    echo "🧹 Cleaning Previous Reports"
+                    echo "========================================="
+
+                    rm -rf reports/html-report
+                    rm -rf reports/allure-results
+                    rm -rf reports/allure-report
+
+                    mkdir -p reports/html-report
+                    mkdir -p reports/allure-results
+
+                    echo "✅ Reports directory cleaned."
+                    echo "========================================="
+                '''
             }
         }
 
@@ -145,7 +169,35 @@ Command     : ${command}
         }
 
         // =========================================================
-        // PRINT REPORT LINKS
+        // VERIFY REPORT FILES
+        // =========================================================
+
+        stage('Verify Reports') {
+            steps {
+                sh '''
+                    echo "========================================="
+                    echo "🔍 Checking Generated Reports"
+                    echo "========================================="
+
+                    echo ""
+                    echo "HTML Report:"
+                    find reports/html-report -type f | head -20 || true
+
+                    echo ""
+                    echo "Allure Results:"
+                    find reports/allure-results -type f | head -20 || true
+
+                    echo ""
+                    echo "Allure result count:"
+                    find reports/allure-results -type f | wc -l
+
+                    echo "========================================="
+                '''
+            }
+        }
+
+        // =========================================================
+        // REPORT LINKS
         // =========================================================
 
         stage('Print Report Links') {
@@ -173,7 +225,7 @@ ${buildUrl}allure
     }
 
     // =============================================================
-    // POST ACTIONS
+    // POST
     // =============================================================
 
     post {
@@ -208,7 +260,6 @@ Raw Result     : ${currentBuild.result}
 
                 echo "✅ Playwright HTML Report published."
 
-
                 // =================================================
                 // ALLURE REPORT
                 // =================================================
@@ -218,8 +269,6 @@ Raw Result     : ${currentBuild.result}
                 allure([
                     includeProperties: false,
                     jdk: '',
-                    properties: [],
-                    reportBuildPolicy: 'ALWAYS',
                     results: [
                         [
                             path: 'reports/allure-results'
@@ -229,9 +278,8 @@ Raw Result     : ${currentBuild.result}
 
                 echo "✅ Allure Report published."
 
-
                 // =================================================
-                // STATUS AFTER REPORTS
+                // STATUS
                 // =================================================
 
                 echo """
@@ -296,8 +344,7 @@ Please check:
 =========================================
 Jenkins marked this build as UNSTABLE.
 
-Check the console output above to determine
-which step changed the build status.
+Check the Allure results and Jenkins plugins.
 =========================================
 """
         }
