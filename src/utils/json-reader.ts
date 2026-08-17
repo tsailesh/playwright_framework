@@ -7,6 +7,7 @@ export class JsonUtils {
    */
   static read<T = unknown>(filePath: string): T {
     const absolutePath = path.resolve(filePath);
+    console.log("Absolute ", absolutePath);
 
     if (!fs.existsSync(absolutePath)) {
       throw new Error(`JSON file not found: ${absolutePath}`);
